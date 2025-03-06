@@ -1,0 +1,18 @@
+[package]
+edition = "2024"
+name = "hashnet_compute_shader"
+version = "0.1.0"
+
+[dependencies]
+bytemuck = { version = "1.14", features = ["derive"] }
+pollster = "0.3"
+rand = "0.8"
+serde = { version = "1.0.218", features = ["derive"] }
+serde_json = "1.0.140"
+wgpu = "0.19"
+winit = "0.29"
+
+[profile.release]
+lto = "thin"
+opt-level = 3
+strip = true
