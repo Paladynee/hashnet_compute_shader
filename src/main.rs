@@ -88,7 +88,7 @@ fn main() {
                             event,
                             is_synthetic,
                         } => {
-                            state.keyboard_input(*device_id, event, *is_synthetic);
+                            state.keyboard_input(*device_id, event, *is_synthetic, &window);
                         }
 
                         WindowEvent::RedrawRequested => {

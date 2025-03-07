@@ -41,10 +41,10 @@ fn f32_from_u32(value: u32) -> f32 {
 const NUDGE_AMOUNT: f32 = 0.01;
 
 // Increased workgroup size from 64 to 256 for better GPU utilization
-@compute @workgroup_size(256)
+@compute @workgroup_size(1024)
 fn update_particles(@builtin(global_invocation_id) global_id: vec3<u32>) {
     // Calculate the actual particle index from 2D dispatch
-    let index = global_id.x + global_id.y * 65535u * 256u;
+    let index = global_id.x + global_id.y * 65535u * 1024u;
 
     if index >= time.particle_count {
         return;

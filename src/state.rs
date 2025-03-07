@@ -4,7 +4,8 @@ use rand::Rng;
 use wgpu::util::DeviceExt;
 use winit::{
     event::{DeviceId, KeyEvent, WindowEvent},
-    keyboard::{Key, SmolStr},
+    keyboard::{Key, NamedKey},
+    window::Window,
 };
 
 use crate::{
@@ -87,7 +88,7 @@ impl<'a> State<'a> {
             present_mode: wgpu::PresentMode::AutoNoVsync,
             alpha_mode: surface_caps.alpha_modes[0],
             view_formats: vec![],
-            desired_maximum_frame_latency: 2,
+            desired_maximum_frame_latency: 1,
         };
         surface.configure(&device, &config);
 
@@ -454,7 +455,7 @@ impl<'a> State<'a> {
 
             // Use 2D dispatch to avoid exceeding the 65535 limit per dimension
             let workgroups_x = 65535u32; // Maximum value for x dimension
-            let workgroups_y = self.game_config.num_particles.div_ceil(workgroups_x * 256); // Calculate y dimension
+            let workgroups_y = self.game_config.num_particles.div_ceil(workgroups_x * 1024); // Calculate y dimension
             compute_pass.dispatch_workgroups(workgroups_x, workgroups_y, 1);
         }
 
@@ -467,6 +468,7 @@ impl<'a> State<'a> {
         device_id: DeviceId,
         key_event: &KeyEvent,
         is_synthetic: bool,
+        window: &Window,
     ) {
         if key_event.state == winit::event::ElementState::Pressed && !is_synthetic {
             match &key_event.logical_key {
@@ -479,6 +481,29 @@ impl<'a> State<'a> {
                     }
                     _ => {}
                 },
+
+                Key::Named(nk) => {
+                    match *nk {
+                        NamedKey::F11 => {
+                            // Toggle fullscreen
+                            let is_fullscreen = window.fullscreen().is_some();
+                            if is_fullscreen {
+                                window.set_fullscreen(None);
+                            } else {
+                                window.set_fullscreen(Some(winit::window::Fullscreen::Borderless(
+                                    None,
+                                )));
+                            }
+                        }
+
+                        NamedKey::Escape => {
+                            // Exit fullscreen
+                            window.set_fullscreen(None);
+                        }
+
+                        _ => {}
+                    }
+                }
 
                 _ => {}
             }
@@ -547,6 +572,6 @@ pub fn get_shader(config: &GameConfiguration) -> String {
     let end = string.find("$RUST_REPLACEMEEND").unwrap() + "$RUST_REPLACEMEEND".len();
     let replacement = format!("\nconst QUAD_SIZE: f32 = {};", config.quad_size);
     string.replace_range(start..end, &replacement);
-    println!("Shader: {}", string);
+    // println!("Shader: {}", string);
     string
 }
