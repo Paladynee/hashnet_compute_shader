@@ -25,7 +25,7 @@
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/hashnet_compute_shader.git
+git clone https://github.com/Paladynee/hashnet_compute_shader
 cd hashnet_compute_shader
 ```
 
